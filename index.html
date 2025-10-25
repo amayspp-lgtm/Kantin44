@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kantin Digital - SMKN 44 JAKARTA</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH57F4c1u6N1m80m1U0jV9+T/Ea1Q4tF2sYfE3sE8/3Z1a65xL4T5v9b1q2+V1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo-brand" id="header-brand">
+                </div>
+            <nav>
+                <button id="admin-login-btn" class="secondary-btn-header">
+                    <i class="fas fa-user-shield"></i> Admin
+                </button>
+                <button id="view-cart-button" class="cart-icon-btn" style="display:none;">
+                    <i class="fas fa-shopping-basket"></i> Keranjang <span id="cart-count" class="badge">0</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="main-content">
+            <p id="loading-message" class="loading-state text-center">Memuat data...</p>
+        </section>
+
+        <section id="filters" style="display:none;">
+            <input type="text" id="search-bar" placeholder="&#xf002; Cari menu..." style="font-family: 'Poppins', Arial, FontAwesome;">
+            <div id="category-filters">
+                </div>
+        </section>
+
+        <section id="menu-list" class="grid-layout">
+            </section>
+    </main>
+
+    <button id="floating-cart-btn" style="display:none;">
+        <i class="fas fa-shopping-cart"></i> Lihat Keranjang (<span id="floating-cart-count">0</span>)
+    </button>
+
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn"><i class="fas fa-times"></i></span>
+            <h2><i class="fas fa-clipboard-list"></i> Detail Keranjang (<span id="shop-name-cart"></span>)</h2>
+            <div id="cart-details">
+                <ul id="modal-cart-list"></ul>
+                <div id="cart-summary">
+                    <strong>Total:</strong> <span id="modal-total-amount">Rp 0</span>
+                </div>
+            </div>
+            <hr>
+            <form id="checkout-form">
+                <h3><i class="fas fa-user-circle"></i> Identitas Pemesan</h3>
+                <input type="text" id="customer-name" placeholder="Nama Lengkap Siswa/Guru" required>
+                <input type="text" id="customer-class" placeholder="Kelas, Lokasi, & No. Absen (Wajib untuk Kurir)" required>
+                <textarea id="order-notes" placeholder="Catatan Tambahan ke Kantin (Opsional)"></textarea>
+
+                <h3><i class="fas fa-money-bill-wave"></i> Metode Pembayaran</h3>
+                <div class="payment-method-selector">
+                    <label>
+                        <input type="radio" name="payment_method" value="QRIS" checked>
+                        QRIS (Transfer Bank/E-Wallet)
+                    </label>
+                    <label>
+                        <input type="radio" name="payment_method" value="COD">
+                        COD (Bayar Tunai ke Kurir)
+                    </label>
+                </div>
+
+                <button type="submit" id="checkout-submit-btn" class="primary-btn">
+                    <i class="fas fa-paper-plane"></i> Kirim Pesanan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content text-center">
+            <span class="close-btn-conf"><i class="fas fa-times"></i></span>
+            <h2>Pesanan Berhasil! 🎉</h2>
+            <p>Kode pesanan Anda:</p>
+            <div class="order-code-box">
+                <strong id="display-order-code">KTS-XXX</strong>
+            </div>
+            
+            <div class="qris-section payment-instruction-box">
+                <h3><i class="fas fa-qrcode"></i> Pembayaran QRIS (<span id="shop-name-qris"></span>)</h3>
+                <img id="qris-image" src="" alt="Kode QRIS Pembayaran" class="qris-img">
+                <p class="small-text">Lakukan pembayaran sekarang. Pesanan akan diproses setelah pembayaran terkonfirmasi oleh toko.</p>
+            </div>
+
+            <div class="cod-section payment-instruction-box" style="display:none;">
+                <h3><i class="fas fa-hand-holding-usd"></i> Pembayaran COD</h3>
+                <p class="large-text">Bayar tunai sebesar <strong id="cod-total-amount">Rp 0</strong> saat pesanan tiba di lokasi Anda.</p>
+                <p class="small-text">Kurir akan menuju lokasi Anda setelah pesanan disiapkan oleh **<span id="shop-name-cod"></span>**.</p>
+            </div>
+            
+            <div class="status-timeline">
+                <h3><i class="fas fa-truck"></i> Status Pesanan</h3>
+                <div id="timeline-steps"></div>
+            </div>
+            
+            <button id="check-status-btn" class="primary-btn small-btn"><i class="fas fa-sync-alt"></i> Cek Status Terbaru</button>
+            <button class="secondary-btn small-btn" onclick="window.location.hash = ''; confirmationModal.style.display='none';"><i class="fas fa-home"></i> Kembali ke Menu</button>
+        </div>
+    </div>
+
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn-login"><i class="fas fa-times"></i></span>
+            <h2><i class="fas fa-lock"></i> Login Admin Toko</h2>
+            <form id="admin-login-form">
+                <input type="text" id="admin-username" placeholder="Username Toko" required>
+                <input type="password" id="admin-password" placeholder="Password" required>
+                <button type="submit" class="primary-btn"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <p class="text-center mt-10">Pemilik Toko Baru? Gunakan Bot Telegram untuk registrasi.</p>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
