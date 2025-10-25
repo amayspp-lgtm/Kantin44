@@ -22,7 +22,7 @@ const shopsData = [
         name: 'Toko Pak Budi (Jajanan)',
         tagline: 'Aneka Gorengan, Roti Bakar, dan snack hits yang selalu fresh dan renyah.',
         shop_icon: 'fa-cookie-bite',
-        shop_image_url: '', // Kosong, akan fallback ke icon
+        shop_image_url: '', 
         qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+PAK+BUDI',
         is_open: true
     },
@@ -79,12 +79,19 @@ const checkoutForm = document.getElementById('checkout-form');
 const searchBar = document.getElementById('search-bar');
 const qrisSection = document.querySelector('.qris-section');
 const codSection = document.querySelector('.cod-section');
+// Ambil elemen loading message dari HTML untuk dihapus
+const loadingMessage = document.getElementById('loading-message');
 
 
 /**
  * 0. ROUTER SEDERHANA (Menggunakan Hash)
  */
 function handleRouting() {
+    // Sembunyikan pesan loading jika ada
+    if (loadingMessage) {
+        loadingMessage.style.display = 'none';
+    }
+
     const path = window.location.hash.slice(1);
     
     if (path.startsWith('/menu/')) {
@@ -102,7 +109,6 @@ document.addEventListener('DOMContentLoaded', handleRouting);
  * UI: Render Header (Berubah sesuai Halaman)
  */
 function renderHeader() {
-    // Tombol Admin HILANG, hanya logo dan navigasi keranjang
     headerBrand.innerHTML = `
         <img src="logo.png" alt="Logo Kantin Digital" class="logo" onclick="window.location.hash = '';"> 
         <div>
@@ -113,14 +119,6 @@ function renderHeader() {
     const isMenuPage = window.location.hash.startsWith('#/menu/');
     document.getElementById('view-cart-button').style.display = isMenuPage ? 'flex' : 'none';
     document.getElementById('floating-cart-btn').style.display = isMenuPage ? 'flex' : 'none';
-
-    // Aksi admin login dipindah ke URL terpisah
-    const adminLoginBtn = document.getElementById('admin-login-btn');
-    if (adminLoginBtn) {
-        adminLoginBtn.addEventListener('click', () => {
-            window.location.href = ADMIN_LOGIN_URL; 
-        });
-    }
 }
 
 
@@ -133,8 +131,6 @@ function loadShopList() {
     
     renderHeader(); 
     filtersSection.style.display = 'none';
-    
-    // Tampilkan judul segera setelah DOM dimuat
     mainContent.innerHTML = '<h2><i class="fas fa-store-alt"></i> Pilih Toko Kantin</h2>';
     menuList.className = 'list-toko-layout';
     
@@ -148,27 +144,16 @@ function loadShopList() {
     
     shops.forEach(shop => {
         const iconClass = shop.shop_icon || 'fa-store';
-        const hasImage = shop.shop_image_url && shop.shop_image_url.trim() !== '';
-
+        
         menuList.innerHTML += `
             <div class="shop-card" data-id="${shop.id}" onclick="window.location.hash = '/menu/${shop.id}'">
                 
-                ${hasImage 
-                    // Jika ada gambar, gunakan tag <img> dengan fallback ke header icon jika gambar error
-                    ? `<img src="${shop.shop_image_url}" alt="Gambar Toko ${shop.name}" class="shop-image" onerror="this.outerHTML='<div class=\\'shop-card-header\\'><h2 style=\\'color:white;\\'>${shop.name}</h2><span class=\\'shop-icon-wrapper\\'><i class=\\'fas ${iconClass}\\'></i></span></div>';">
-                       <div class="shop-card-header" style="background-color: var(--secondary-color);">
-                           <h2>${shop.name}</h2>
-                           <span class="shop-icon-wrapper"><i class="fas ${iconClass}"></i></span>
-                       </div>`
-                    // Jika tidak ada gambar sama sekali, gunakan header icon
-                    : `<div class="shop-card-header">
-                           <h2>${shop.name}</h2>
-                           <span class="shop-icon-wrapper"><i class="fas ${iconClass}"></i></span>
-                       </div>`
-                }
+                <div class="shop-card-header">
+                    <h2>${shop.name}</h2>
+                    <span class="shop-icon-wrapper"><i class="fas ${iconClass}"></i></span>
+                </div>
                 
                 <div class="shop-card-body">
-                    ${hasImage ? `<h3 style="color: var(--primary-color);">${shop.name}</h3>` : ''}
                     <p class="shop-status"><i class="fas fa-circle" style="font-size: 0.7em; color: var(--success-color);"></i> BUKA</p>
                     <p class="tagline">${shop.tagline || 'Menyediakan makanan dan minuman terbaik.'}</p>
                 </div>
