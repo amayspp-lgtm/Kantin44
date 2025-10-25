@@ -3,7 +3,7 @@
 // --- KONFIGURASI FRONT-END ---
 const API_BASE_URL = '/api'; 
 const CURRENCY_FORMAT = new Intl.NumberFormat('id-ID');
-const ADMIN_LOGIN_URL = 'admin-login.html'; // Link terpisah untuk Admin
+const ADMIN_LOGIN_URL = 'admin-login.html'; 
 // --- END KONFIGURASI ---
 
 // --- DUMMY DATA TOKO (HARDCODED) ---
@@ -22,7 +22,7 @@ const shopsData = [
         name: 'Toko Pak Budi (Jajanan)',
         tagline: 'Aneka Gorengan, Roti Bakar, dan snack hits yang selalu fresh dan renyah.',
         shop_icon: 'fa-cookie-bite',
-        shop_image_url: '', 
+        shop_image_url: '', // Kosong, akan fallback ke icon
         qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+PAK+BUDI',
         is_open: true
     },
@@ -114,16 +114,13 @@ function renderHeader() {
     document.getElementById('view-cart-button').style.display = isMenuPage ? 'flex' : 'none';
     document.getElementById('floating-cart-btn').style.display = isMenuPage ? 'flex' : 'none';
 
-    // Logika Admin Login HANYA jika tombol ada (diasumsikan tombol admin-login-btn sudah dihapus)
-    // Jika Anda ingin mengaktifkan tombol admin login di header, kembalikan kode berikut:
-    /*
-    const adminBtn = document.getElementById('admin-login-btn');
-    if (adminBtn) {
-        adminBtn.addEventListener('click', () => {
+    // Aksi admin login dipindah ke URL terpisah
+    const adminLoginBtn = document.getElementById('admin-login-btn');
+    if (adminLoginBtn) {
+        adminLoginBtn.addEventListener('click', () => {
             window.location.href = ADMIN_LOGIN_URL; 
         });
     }
-    */
 }
 
 
@@ -136,6 +133,8 @@ function loadShopList() {
     
     renderHeader(); 
     filtersSection.style.display = 'none';
+    
+    // Tampilkan judul segera setelah DOM dimuat
     mainContent.innerHTML = '<h2><i class="fas fa-store-alt"></i> Pilih Toko Kantin</h2>';
     menuList.className = 'list-toko-layout';
     
@@ -155,13 +154,13 @@ function loadShopList() {
             <div class="shop-card" data-id="${shop.id}" onclick="window.location.hash = '/menu/${shop.id}'">
                 
                 ${hasImage 
-                    // Jika ada gambar, tampilkan di atas dengan fallback onerror
+                    // Jika ada gambar, gunakan tag <img> dengan fallback ke header icon jika gambar error
                     ? `<img src="${shop.shop_image_url}" alt="Gambar Toko ${shop.name}" class="shop-image" onerror="this.outerHTML='<div class=\\'shop-card-header\\'><h2 style=\\'color:white;\\'>${shop.name}</h2><span class=\\'shop-icon-wrapper\\'><i class=\\'fas ${iconClass}\\'></i></span></div>';">
                        <div class="shop-card-header" style="background-color: var(--secondary-color);">
                            <h2>${shop.name}</h2>
                            <span class="shop-icon-wrapper"><i class="fas ${iconClass}"></i></span>
                        </div>`
-                    // Jika tidak ada gambar atau error, gunakan header icon
+                    // Jika tidak ada gambar sama sekali, gunakan header icon
                     : `<div class="shop-card-header">
                            <h2>${shop.name}</h2>
                            <span class="shop-icon-wrapper"><i class="fas ${iconClass}"></i></span>
