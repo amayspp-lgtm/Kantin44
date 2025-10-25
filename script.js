@@ -3,7 +3,7 @@
 // --- KONFIGURASI FRONT-END ---
 const API_BASE_URL = '/api'; 
 const CURRENCY_FORMAT = new Intl.NumberFormat('id-ID');
-const ADMIN_LOGIN_URL = 'admin-login.html'; 
+const ADMIN_LOGIN_URL = 'admin-login.html'; // Link terpisah untuk Admin
 // --- END KONFIGURASI ---
 
 // --- DUMMY DATA TOKO (HARDCODED) ---
@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', handleRouting);
  * UI: Render Header (Berubah sesuai Halaman)
  */
 function renderHeader() {
+    // Tombol Admin HILANG, hanya logo dan navigasi keranjang
     headerBrand.innerHTML = `
         <img src="logo.png" alt="Logo Kantin Digital" class="logo" onclick="window.location.hash = '';"> 
         <div>
@@ -113,10 +114,16 @@ function renderHeader() {
     document.getElementById('view-cart-button').style.display = isMenuPage ? 'flex' : 'none';
     document.getElementById('floating-cart-btn').style.display = isMenuPage ? 'flex' : 'none';
 
-    // Aksi admin login dipindah ke URL terpisah
-    document.getElementById('admin-login-btn').addEventListener('click', () => {
-        window.location.href = ADMIN_LOGIN_URL; 
-    });
+    // Logika Admin Login HANYA jika tombol ada (diasumsikan tombol admin-login-btn sudah dihapus)
+    // Jika Anda ingin mengaktifkan tombol admin login di header, kembalikan kode berikut:
+    /*
+    const adminBtn = document.getElementById('admin-login-btn');
+    if (adminBtn) {
+        adminBtn.addEventListener('click', () => {
+            window.location.href = ADMIN_LOGIN_URL; 
+        });
+    }
+    */
 }
 
 
@@ -148,11 +155,13 @@ function loadShopList() {
             <div class="shop-card" data-id="${shop.id}" onclick="window.location.hash = '/menu/${shop.id}'">
                 
                 ${hasImage 
-                    ? `<img src="${shop.shop_image_url}" alt="Gambar Toko ${shop.name}" class="shop-image">
+                    // Jika ada gambar, tampilkan di atas dengan fallback onerror
+                    ? `<img src="${shop.shop_image_url}" alt="Gambar Toko ${shop.name}" class="shop-image" onerror="this.outerHTML='<div class=\\'shop-card-header\\'><h2 style=\\'color:white;\\'>${shop.name}</h2><span class=\\'shop-icon-wrapper\\'><i class=\\'fas ${iconClass}\\'></i></span></div>';">
                        <div class="shop-card-header" style="background-color: var(--secondary-color);">
                            <h2>${shop.name}</h2>
                            <span class="shop-icon-wrapper"><i class="fas ${iconClass}"></i></span>
                        </div>`
+                    // Jika tidak ada gambar atau error, gunakan header icon
                     : `<div class="shop-card-header">
                            <h2>${shop.name}</h2>
                            <span class="shop-icon-wrapper"><i class="fas ${iconClass}"></i></span>
@@ -241,7 +250,6 @@ function renderMenu() {
                 
                 <div class="product-visual">
                     ${hasProductImage 
-                        // Tambahkan onerror untuk fallback ke icon jika gambar tidak ditemukan di path
                         ? `<img src="${item.image_url}" alt="${item.name}" class="product-image" onerror="this.outerHTML='<div class=\\'image-placeholder\\'><i class=\\'fas ${iconClass}\\'></i></div>';">`
                         : `<div class="image-placeholder"><i class="fas ${iconClass}"></i></div>`
                     }
