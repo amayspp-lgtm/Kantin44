@@ -58,22 +58,6 @@ header h1 {
     color: #6c757d;
 }
 
-/* Tombol Header Admin */
-.secondary-btn-header {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s;
-    margin-right: 10px;
-}
-.secondary-btn-header:hover {
-    background-color: #5a6268;
-}
-
 /* Ikon Keranjang */
 .cart-icon-btn {
     background: var(--primary-color);
@@ -240,13 +224,6 @@ header h1 {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     position: relative;
     animation: fadeIn 0.3s;
-}
-.close-btn, .close-btn-conf, .close-btn-login {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
 }
 #modal-cart-list {
     list-style: none;
