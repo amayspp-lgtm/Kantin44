@@ -3,10 +3,60 @@
 // --- KONFIGURASI BACK-END API ---
 const API_BASE_URL = '/api'; 
 const CURRENCY_FORMAT = new Intl.NumberFormat('id-ID');
+
+// URL ADMIN LOGIN Terpisah (Akan diakses di browser)
+const ADMIN_LOGIN_URL = 'admin-login.html'; 
 // --- END KONFIGURASI ---
 
+// --- DUMMY DATA TOKO (HARDCODED) ---
+const shopsData = [
+    {
+        id: 'KANTIN1',
+        name: 'Toko Bu Siti (Makanan Berat)',
+        tagline: 'Spesialis Nasi Uduk dan Soto Ayam hangat.',
+        shop_icon: 'fa-utensils', 
+        qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+BU+SITI', 
+        is_open: true
+    },
+    {
+        id: 'KANTIN2',
+        name: 'Toko Pak Budi (Jajanan)',
+        tagline: 'Aneka Gorengan, Roti Bakar, dan snack hits.',
+        shop_icon: 'fa-cookie-bite',
+        qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+PAK+BUDI',
+        is_open: true
+    },
+    {
+        id: 'KANTIN3',
+        name: 'Minuman Segar',
+        tagline: 'Es Teh, Es Jeruk, dan jus buah dingin.',
+        shop_icon: 'fa-mug-hot',
+        qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+MINUMAN',
+        is_open: true
+    }
+];
+
+// --- DUMMY DATA PRODUK PER TOKO (HARDCODED) ---
+const menuDataPerShop = {
+    'KANTIN1': [
+        { id: 'M001', name: 'Nasi Uduk Komplit', price: 15000, category: 'Nasi', stock: 15, image_url: 'https://via.placeholder.com/400x180.png?text=Nasi+Uduk' },
+        { id: 'M002', name: 'Soto Ayam Kuah Bening', price: 18000, category: 'Kuah', stock: 8, image_url: 'https://via.placeholder.com/400x180.png?text=Soto+Ayam' },
+        { id: 'M003', name: 'Nasi Goreng Kampung', price: 16000, category: 'Nasi', stock: 0, image_url: 'https://via.placeholder.com/400x180.png?text=Nasgor' },
+    ],
+    'KANTIN2': [
+        { id: 'J001', name: 'Roti Bakar Cokelat Keju', price: 12000, category: 'Roti', stock: 20, image_url: 'https://via.placeholder.com/400x180.png?text=Roti+Bakar' },
+        { id: 'J002', name: 'Tempe Mendoan (3 pcs)', price: 5000, category: 'Gorengan', stock: 50, image_url: 'https://via.placeholder.com/400x180.png?text=Mendoan' },
+        { id: 'J003', name: 'Sosis Bakar Jumbo', price: 10000, category: 'Sosis', stock: 15, image_url: 'https://via.placeholder.com/400x180.png?text=Sosis+Bakar' },
+    ],
+    'KANTIN3': [
+        { id: 'D001', name: 'Es Teh Manis Jumbo', price: 5000, category: 'Teh', stock: 100, image_url: 'https://via.placeholder.com/400x180.png?text=Es+Teh' },
+        { id: 'D002', name: 'Jus Alpukat', price: 14000, category: 'Jus', stock: 12, image_url: 'https://via.placeholder.com/400x180.png?text=Jus+Alpukat' },
+        { id: 'D003', name: 'Air Mineral Dingin', price: 3000, category: 'Botol', stock: 80, image_url: 'https://via.placeholder.com/400x180.png?text=Air+Mineral' },
+    ],
+};
+// --- END DUMMY DATA ---
+
 // Variabel Global
-let shopsData = []; 
 let menuData = []; 
 let cart = [];
 let filteredMenu = []; 
@@ -14,7 +64,7 @@ let currentShopId = null;
 let currentShopName = null;
 let currentOrderCode = null;
 let currentTotalAmount = 0; 
-let currentPaymentMethod = 'QRIS'; // Default
+let currentPaymentMethod = 'QRIS'; 
 
 // Dapatkan Elemen DOM
 const mainContent = document.getElementById('main-content');
@@ -24,7 +74,6 @@ const headerBrand = document.getElementById('header-brand');
 const cartCountElements = [document.getElementById('cart-count'), document.getElementById('floating-cart-count')];
 const checkoutModal = document.getElementById('checkout-modal');
 const confirmationModal = document.getElementById('confirmation-modal');
-const adminLoginModal = document.getElementById('admin-login-modal');
 const checkoutForm = document.getElementById('checkout-form');
 const searchBar = document.getElementById('search-bar');
 const qrisSection = document.querySelector('.qris-section');
@@ -53,7 +102,7 @@ document.addEventListener('DOMContentLoaded', handleRouting);
  */
 function renderHeader() {
     headerBrand.innerHTML = `
-        <img src="logo-kantin-digital.png" alt="Logo Kantin Digital" class="logo" onclick="window.location.hash = '';"> 
+        <img src="logo.png" alt="Logo Kantin Digital" class="logo" onclick="window.location.hash = '';"> 
         <div>
             <h1>Kantin Digital</h1>
             <p class="school-name">SMKN 44 JAKARTA</p>
@@ -76,27 +125,20 @@ async function loadShopList() {
     filtersSection.style.display = 'none';
     mainContent.innerHTML = '<h2><i class="fas fa-store"></i> Pilih Toko Kantin</h2>';
     menuList.className = 'list-toko-layout';
-    menuList.innerHTML = '<p id="loading-message" class="loading-state text-center" style="grid-column: 1 / -1;">Memuat daftar toko...</p>';
-
-    try {
-        // API Call: GET /api/shops
-        const response = await fetch(`${API_BASE_URL}/shops`);
-        shopsData = await response.json();
-    } catch (error) {
-        menuList.innerHTML = '<p class="text-center" style="grid-column: 1 / -1; color: var(--danger-color);">❌ Gagal memuat daftar toko. Cek koneksi API.</p>';
-        return;
-    }
     
+    // Gunakan dummy data shopsData secara langsung
+    const shops = shopsData; 
+
     menuList.innerHTML = '';
-    if (shopsData.length === 0) {
+    if (shops.length === 0) {
         menuList.innerHTML = '<p class="text-center" style="grid-column: 1 / -1;">Saat ini tidak ada toko yang buka.</p>';
         return;
     }
     
-    shopsData.forEach(shop => {
+    shops.forEach(shop => {
         menuList.innerHTML += `
             <div class="shop-card" data-id="${shop.id}" onclick="window.location.hash = '/menu/${shop.id}'">
-                <i class="fas fa-store shop-icon"></i>
+                <i class="fas ${shop.shop_icon} shop-icon"></i>
                 <h2>${shop.name}</h2>
                 <p class="shop-status"><i class="fas fa-circle"></i> BUKA</p>
                 <p class="text-muted">${shop.tagline || 'Menyediakan makanan dan minuman terbaik.'}</p>
@@ -108,7 +150,6 @@ async function loadShopList() {
 
 // --- FUNGSI HALAMAN MENU TOKO ---
 async function loadShopMenu(shopId) {
-    // Cek apakah sudah ada di toko lain, jika iya reset cart
     if (currentShopId && currentShopId !== shopId) {
         if(confirm("Keranjang Anda akan dikosongkan karena beralih ke toko lain. Lanjutkan?")) {
             cart = [];
@@ -134,21 +175,13 @@ async function loadShopMenu(shopId) {
     `;
     filtersSection.style.display = 'block';
     menuList.className = 'grid-layout';
-    menuList.innerHTML = '<p class="loading-state text-center" style="grid-column: 1 / -1;">Memuat menu...</p>';
-
-    try {
-        // API Call: GET /api/menu/:shop_id
-        const response = await fetch(`${API_BASE_URL}/menu/${shopId}`);
-        menuData = await response.json();
-        
-        searchBar.value = '';
-        handleFilterAndSearch(); 
-        updateCartDisplay();
-
-    } catch (error) {
-        menuList.innerHTML = '<p class="text-center" style="grid-column: 1 / -1; color: var(--danger-color);">❌ Gagal memuat menu toko ini.</p>';
-        return;
-    }
+    
+    // Gunakan dummy data menuDataPerShop secara langsung
+    menuData = menuDataPerShop[shopId] || [];
+    
+    searchBar.value = '';
+    handleFilterAndSearch(); 
+    updateCartDisplay();
 }
 
 
@@ -200,7 +233,6 @@ function renderMenu() {
         `;
     });
 }
-menuList.addEventListener('click', handleCartAction);
 
 
 function handleCartAction(event) {
@@ -311,7 +343,7 @@ checkoutForm.addEventListener('submit', async (event) => {
     document.getElementById('checkout-submit-btn').disabled = true;
 
     try {
-        // API Call: POST /api/order
+        // API Call: POST /api/order (Mengirim pesanan ke server)
         const response = await fetch(`${API_BASE_URL}/order`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -357,7 +389,7 @@ async function showConfirmation(code, initialStatus, shopId, paymentMethod) {
 
     if (isQris) {
         document.getElementById('shop-name-qris').textContent = shop ? shop.name : 'Toko';
-        // Asumsi: qris_url sudah ada di objek shop (diambil dari /api/shops)
+        // Menggunakan URL QRIS dari dummy data
         document.getElementById('qris-image').src = shop.qris_url || 'https://via.placeholder.com/250.png?text=QRIS+TIDAK+TERSEDIA';
         document.getElementById('qris-image').alt = `Kode QRIS ${shop.name}`;
     } else { // COD
@@ -377,11 +409,13 @@ document.querySelector('.close-btn-conf').addEventListener('click', () => confir
  * Logika Status Timeline
  */
 const STATUS_STEPS = {
-    'Menunggu': 0,
+    'Menunggu Konfirmasi': 0,
+    'Menunggu Pembayaran': 0, // Sama dengan menunggu konfirmasi di awal
     'Diproses': 1,
     'Kurir Dipersiapkan': 2,
     'Dalam Pengiriman': 3,
-    'Selesai': 4
+    'Selesai': 4,
+    'Dibatalkan': 5 // Status error
 };
 const STEP_TITLES = [
     'Menunggu', 
@@ -395,22 +429,25 @@ function updateTimeline(currentStatus) {
     const timelineSteps = document.getElementById('timeline-steps');
     timelineSteps.innerHTML = '';
     const activeIndex = STATUS_STEPS[currentStatus] || 0;
+    const isCanceled = currentStatus === 'Dibatalkan';
 
     STEP_TITLES.forEach((title, index) => {
         const stepDiv = document.createElement('div');
-        // Check jika status adalah Canceled/Dibatalkan, harus ada logika di Back-End
-        const isCanceled = currentStatus === 'Dibatalkan';
-
+        
+        // Logika untuk status Batal
         if (isCanceled) {
             stepDiv.className = `step`;
             stepDiv.innerHTML = `<div class="step-dot" style="background-color: var(--danger-color);"></div><div class="step-title" style="color:var(--danger-color);">Dibatalkan</div>`;
-        } else {
-            stepDiv.className = `step ${index <= activeIndex ? 'active' : ''}`;
-            stepDiv.innerHTML = `
-                <div class="step-dot"></div>
-                <div class="step-title">${title}</div>
-            `;
+            if (index === 0) timelineSteps.innerHTML = ''; // Hanya tampilkan Batal jika statusnya itu
+            if (index === 0) timelineSteps.appendChild(stepDiv);
+            return;
         }
+
+        stepDiv.className = `step ${index <= activeIndex ? 'active' : ''}`;
+        stepDiv.innerHTML = `
+            <div class="step-dot"></div>
+            <div class="step-title">${title}</div>
+        `;
         timelineSteps.appendChild(stepDiv);
     });
 }
@@ -429,6 +466,7 @@ checkStatusBtn.addEventListener('click', async () => {
 
         if (response.ok) {
             updateTimeline(data.status);
+            alert(`Status terbaru: ${data.status}`);
         } else {
             alert(`Gagal cek status: ${data.message || 'Error'}`);
         }
@@ -441,34 +479,10 @@ checkStatusBtn.addEventListener('click', async () => {
 });
 
 
-// --- LOGIKA ADMIN TOKO ---
-function showAdminLoginModal() {
-    adminLoginModal.style.display = 'block';
-}
-document.getElementById('admin-login-btn').addEventListener('click', showAdminLoginModal);
-document.querySelector('.close-btn-login').addEventListener('click', () => adminLoginModal.style.display = 'none');
-document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('admin-username').value;
-    const password = document.getElementById('admin-password').value;
-    
-    try {
-        // API Call: POST /api/auth/login
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        const data = await response.json();
-        
-        if (data.success) {
-            alert("Login Berhasil! Mengarahkan ke Dashboard Admin...");
-            // Asumsi: admin.html ada di root atau di folder /admin
-            window.location.href = `/admin.html?shop_id=${data.shop_id}`; 
-        } else {
-            alert("Login Gagal: " + data.message);
-        }
-    } catch (error) {
-        alert("Kesalahan koneksi saat login.");
-    }
+// --- LOGIKA ADMIN LOGIN TERPISAH ---
+// Tombol Admin di header sudah dihapus. Kita hanya perlu listener untuk tombol login yang diasumsikan ada di halaman lain.
+
+// Listener untuk tombol Login Admin (akan diarahkan ke admin-login.html)
+document.getElementById('admin-login-btn').addEventListener('click', () => {
+    window.location.href = ADMIN_LOGIN_URL; 
 });
