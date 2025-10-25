@@ -1,11 +1,9 @@
 // script.js
 
-// --- KONFIGURASI BACK-END API ---
+// --- KONFIGURASI FRONT-END ---
 const API_BASE_URL = '/api'; 
 const CURRENCY_FORMAT = new Intl.NumberFormat('id-ID');
-
-// URL ADMIN LOGIN Terpisah (Akan diakses di browser)
-const ADMIN_LOGIN_URL = 'admin-login.html'; 
+const ADMIN_LOGIN_URL = 'admin-login.html'; // Link terpisah untuk Admin
 // --- END KONFIGURASI ---
 
 // --- DUMMY DATA TOKO (HARDCODED) ---
@@ -15,6 +13,7 @@ const shopsData = [
         name: 'Toko Bu Siti (Makanan Berat)',
         tagline: 'Spesialis Nasi Uduk dan Soto Ayam hangat.',
         shop_icon: 'fa-utensils', 
+        shop_image_url: 'toko-img/bu_siti.jpg', // PATH LOKAL BARU
         qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+BU+SITI', 
         is_open: true
     },
@@ -23,6 +22,7 @@ const shopsData = [
         name: 'Toko Pak Budi (Jajanan)',
         tagline: 'Aneka Gorengan, Roti Bakar, dan snack hits.',
         shop_icon: 'fa-cookie-bite',
+        shop_image_url: '', // Kosong, akan fallback ke icon
         qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+PAK+BUDI',
         is_open: true
     },
@@ -31,6 +31,7 @@ const shopsData = [
         name: 'Minuman Segar',
         tagline: 'Es Teh, Es Jeruk, dan jus buah dingin.',
         shop_icon: 'fa-mug-hot',
+        shop_image_url: 'toko-img/minuman.jpg',
         qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+MINUMAN',
         is_open: true
     }
@@ -39,19 +40,19 @@ const shopsData = [
 // --- DUMMY DATA PRODUK PER TOKO (HARDCODED) ---
 const menuDataPerShop = {
     'KANTIN1': [
-        { id: 'M001', name: 'Nasi Uduk Komplit', price: 15000, category: 'Nasi', stock: 15, image_url: 'https://via.placeholder.com/400x180.png?text=Nasi+Uduk' },
-        { id: 'M002', name: 'Soto Ayam Kuah Bening', price: 18000, category: 'Kuah', stock: 8, image_url: 'https://via.placeholder.com/400x180.png?text=Soto+Ayam' },
-        { id: 'M003', name: 'Nasi Goreng Kampung', price: 16000, category: 'Nasi', stock: 0, image_url: 'https://via.placeholder.com/400x180.png?text=Nasgor' },
+        { id: 'M001', name: 'Nasi Uduk Komplit', price: 15000, category: 'Nasi', stock: 15, image_url: 'produk-img/nasi_uduk.jpg', product_icon: 'fa-bowl-rice' },
+        { id: 'M002', name: 'Soto Ayam Kuah Bening', price: 18000, category: 'Kuah', stock: 8, image_url: 'produk-img/soto_ayam.jpg', product_icon: 'fa-bowl-food' },
+        { id: 'M003', name: 'Nasi Goreng Kampung', price: 16000, category: 'Nasi', stock: 0, image_url: '', product_icon: 'fa-pizza-slice' },
     ],
     'KANTIN2': [
-        { id: 'J001', name: 'Roti Bakar Cokelat Keju', price: 12000, category: 'Roti', stock: 20, image_url: 'https://via.placeholder.com/400x180.png?text=Roti+Bakar' },
-        { id: 'J002', name: 'Tempe Mendoan (3 pcs)', price: 5000, category: 'Gorengan', stock: 50, image_url: 'https://via.placeholder.com/400x180.png?text=Mendoan' },
-        { id: 'J003', name: 'Sosis Bakar Jumbo', price: 10000, category: 'Sosis', stock: 15, image_url: 'https://via.placeholder.com/400x180.png?text=Sosis+Bakar' },
+        { id: 'J001', name: 'Roti Bakar Cokelat Keju', price: 12000, category: 'Roti', stock: 20, image_url: 'produk-img/roti_bakar.jpg', product_icon: 'fa-sandwich' },
+        { id: 'J002', name: 'Tempe Mendoan (3 pcs)', price: 5000, category: 'Gorengan', stock: 50, image_url: 'produk-img/mendoan.jpg', product_icon: 'fa-pepper-hot' },
+        { id: 'J003', name: 'Sosis Bakar Jumbo', price: 10000, category: 'Sosis', stock: 15, image_url: 'produk-img/sosis.jpg', product_icon: 'fa-hotdog' },
     ],
     'KANTIN3': [
-        { id: 'D001', name: 'Es Teh Manis Jumbo', price: 5000, category: 'Teh', stock: 100, image_url: 'https://via.placeholder.com/400x180.png?text=Es+Teh' },
-        { id: 'D002', name: 'Jus Alpukat', price: 14000, category: 'Jus', stock: 12, image_url: 'https://via.placeholder.com/400x180.png?text=Jus+Alpukat' },
-        { id: 'D003', name: 'Air Mineral Dingin', price: 3000, category: 'Botol', stock: 80, image_url: 'https://via.placeholder.com/400x180.png?text=Air+Mineral' },
+        { id: 'D001', name: 'Es Teh Manis Jumbo', price: 5000, category: 'Teh', stock: 100, image_url: 'produk-img/es_teh.jpg', product_icon: 'fa-glass-water' },
+        { id: 'D002', name: 'Jus Alpukat', price: 14000, category: 'Jus', stock: 12, image_url: 'produk-img/jus_alpukat.jpg', product_icon: 'fa-blender' },
+        { id: 'D003', name: 'Air Mineral Dingin', price: 3000, category: 'Botol', stock: 80, image_url: '', product_icon: 'fa-bottle-water' },
     ],
 };
 // --- END DUMMY DATA ---
@@ -111,6 +112,10 @@ function renderHeader() {
     const isMenuPage = window.location.hash.startsWith('#/menu/');
     document.getElementById('view-cart-button').style.display = isMenuPage ? 'flex' : 'none';
     document.getElementById('floating-cart-btn').style.display = isMenuPage ? 'flex' : 'none';
+
+    document.getElementById('admin-login-btn').addEventListener('click', () => {
+        window.location.href = ADMIN_LOGIN_URL; 
+    });
 }
 
 
@@ -123,10 +128,9 @@ async function loadShopList() {
     
     renderHeader(); 
     filtersSection.style.display = 'none';
-    mainContent.innerHTML = '<h2><i class="fas fa-store"></i> Pilih Toko Kantin</h2>';
+    mainContent.innerHTML = '<h2><i class="fas fa-store-alt"></i> Pilih Toko Kantin</h2>';
     menuList.className = 'list-toko-layout';
     
-    // Gunakan dummy data shopsData secara langsung
     const shops = shopsData; 
 
     menuList.innerHTML = '';
@@ -136,12 +140,29 @@ async function loadShopList() {
     }
     
     shops.forEach(shop => {
+        const iconClass = shop.shop_icon || 'fa-store';
+        const hasImage = shop.shop_image_url && shop.shop_image_url.trim() !== '';
+
         menuList.innerHTML += `
             <div class="shop-card" data-id="${shop.id}" onclick="window.location.hash = '/menu/${shop.id}'">
-                <i class="fas ${shop.shop_icon} shop-icon"></i>
-                <h2>${shop.name}</h2>
-                <p class="shop-status"><i class="fas fa-circle"></i> BUKA</p>
-                <p class="text-muted">${shop.tagline || 'Menyediakan makanan dan minuman terbaik.'}</p>
+                
+                ${hasImage 
+                    ? `<img src="${shop.shop_image_url}" alt="Gambar Toko ${shop.name}" class="shop-image">
+                       <div class="shop-card-header" style="background-color: var(--secondary-color);">
+                           <h2>${shop.name}</h2>
+                           <span class="shop-icon-wrapper"><i class="fas ${iconClass}"></i></span>
+                       </div>`
+                    : `<div class="shop-card-header">
+                           <h2>${shop.name}</h2>
+                           <span class="shop-icon-wrapper"><i class="fas ${iconClass}"></i></span>
+                       </div>`
+                }
+                
+                <div class="shop-card-body">
+                    ${hasImage ? `<h3 style="color: var(--primary-color);">${shop.name}</h3>` : ''}
+                    <p class="shop-status"><i class="fas fa-circle" style="font-size: 0.7em; color: var(--success-color);"></i> BUKA</p>
+                    <p class="tagline">${shop.tagline || 'Menyediakan makanan dan minuman terbaik.'}</p>
+                </div>
             </div>
         `;
     });
@@ -176,7 +197,6 @@ async function loadShopMenu(shopId) {
     filtersSection.style.display = 'block';
     menuList.className = 'grid-layout';
     
-    // Gunakan dummy data menuDataPerShop secara langsung
     menuData = menuDataPerShop[shopId] || [];
     
     searchBar.value = '';
@@ -210,10 +230,19 @@ function renderMenu() {
         const cartItem = cart.find(c => c.id === item.id);
         const quantity = cartItem ? cartItem.quantity : 0;
         const outOfStock = item.stock <= 0;
+        const hasProductImage = item.image_url && item.image_url.trim() !== '';
+        const iconClass = item.product_icon || (item.category === 'Minuman' ? 'fa-cup-straw' : 'fa-pizza-slice'); // Default icon
 
         menuList.innerHTML += `
             <div class="menu-card" data-id="${item.id}">
-                <img src="${item.image_url || 'https://via.placeholder.com/400x180.png?text=No+Image'}" alt="${item.name}" class="product-image">
+                
+                <div class="product-visual">
+                    ${hasProductImage 
+                        ? `<img src="${item.image_url}" alt="${item.name}" class="product-image">`
+                        : `<div class="image-placeholder"><i class="fas ${iconClass}"></i></div>`
+                    }
+                </div>
+
                 <div class="card-content">
                     <h3>${item.name}</h3>
                     <p class="price">Rp ${CURRENCY_FORMAT.format(item.price)}</p>
@@ -233,6 +262,7 @@ function renderMenu() {
         `;
     });
 }
+menuList.addEventListener('click', handleCartAction);
 
 
 function handleCartAction(event) {
@@ -343,12 +373,16 @@ checkoutForm.addEventListener('submit', async (event) => {
     document.getElementById('checkout-submit-btn').disabled = true;
 
     try {
-        // API Call: POST /api/order (Mengirim pesanan ke server)
-        const response = await fetch(`${API_BASE_URL}/order`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderPayload)
-        });
+        // SIMULASI API CALL: POST /api/order
+        // Ganti dengan fetch(`${API_BASE_URL}/order`, {...}) di Back-End sungguhan
+        const simulatedResponse = {
+            ok: true,
+            json: () => Promise.resolve({
+                order_code: 'KTS-' + Math.floor(Math.random() * 900 + 100),
+                status: paymentMethod === 'QRIS' ? 'Menunggu Pembayaran' : 'Menunggu Konfirmasi'
+            })
+        };
+        const response = simulatedResponse; 
         
         const data = await response.json();
 
@@ -389,8 +423,7 @@ async function showConfirmation(code, initialStatus, shopId, paymentMethod) {
 
     if (isQris) {
         document.getElementById('shop-name-qris').textContent = shop ? shop.name : 'Toko';
-        // Menggunakan URL QRIS dari dummy data
-        document.getElementById('qris-image').src = shop.qris_url || 'https://via.placeholder.com/250.png?text=QRIS+TIDAK+TERSEDIA';
+        document.getElementById('qris-image').src = shop.qris_url || 'https://via.placeholder.com/250x250.png?text=QRIS+TIDAK+TERSEDIA';
         document.getElementById('qris-image').alt = `Kode QRIS ${shop.name}`;
     } else { // COD
         document.getElementById('shop-name-cod').textContent = shop ? shop.name : 'Toko';
@@ -410,12 +443,12 @@ document.querySelector('.close-btn-conf').addEventListener('click', () => confir
  */
 const STATUS_STEPS = {
     'Menunggu Konfirmasi': 0,
-    'Menunggu Pembayaran': 0, // Sama dengan menunggu konfirmasi di awal
+    'Menunggu Pembayaran': 0,
     'Diproses': 1,
     'Kurir Dipersiapkan': 2,
     'Dalam Pengiriman': 3,
     'Selesai': 4,
-    'Dibatalkan': 5 // Status error
+    'Dibatalkan': 5 
 };
 const STEP_TITLES = [
     'Menunggu', 
@@ -431,18 +464,13 @@ function updateTimeline(currentStatus) {
     const activeIndex = STATUS_STEPS[currentStatus] || 0;
     const isCanceled = currentStatus === 'Dibatalkan';
 
+    if (isCanceled) {
+        timelineSteps.innerHTML = `<div class="step" style="text-align:center;"><div class="step-dot" style="background-color: var(--danger-color);"></div><div class="step-title" style="color:var(--danger-color);">PESANAN DIBATALKAN</div></div>`;
+        return;
+    }
+
     STEP_TITLES.forEach((title, index) => {
         const stepDiv = document.createElement('div');
-        
-        // Logika untuk status Batal
-        if (isCanceled) {
-            stepDiv.className = `step`;
-            stepDiv.innerHTML = `<div class="step-dot" style="background-color: var(--danger-color);"></div><div class="step-title" style="color:var(--danger-color);">Dibatalkan</div>`;
-            if (index === 0) timelineSteps.innerHTML = ''; // Hanya tampilkan Batal jika statusnya itu
-            if (index === 0) timelineSteps.appendChild(stepDiv);
-            return;
-        }
-
         stepDiv.className = `step ${index <= activeIndex ? 'active' : ''}`;
         stepDiv.innerHTML = `
             <div class="step-dot"></div>
@@ -460,8 +488,18 @@ checkStatusBtn.addEventListener('click', async () => {
     checkStatusBtn.disabled = true;
 
     try {
-        // API Call: GET /api/order/status/:kode
-        const response = await fetch(`${API_BASE_URL}/order/status/${currentOrderCode}`);
+        // SIMULASI API CALL: GET /api/order/status/:kode
+        const simulatedStatus = ['Menunggu Pembayaran', 'Diproses', 'Dalam Pengiriman', 'Selesai'];
+        const currentSimulatedIndex = Math.floor(Math.random() * simulatedStatus.length);
+
+        const response = {
+            ok: true,
+            json: () => Promise.resolve({
+                order_code: currentOrderCode,
+                status: simulatedStatus[currentSimulatedIndex]
+            })
+        };
+
         const data = await response.json();
 
         if (response.ok) {
@@ -479,10 +517,9 @@ checkStatusBtn.addEventListener('click', async () => {
 });
 
 
-// --- LOGIKA ADMIN LOGIN TERPISAH ---
-// Tombol Admin di header sudah dihapus. Kita hanya perlu listener untuk tombol login yang diasumsikan ada di halaman lain.
-
-// Listener untuk tombol Login Admin (akan diarahkan ke admin-login.html)
-document.getElementById('admin-login-btn').addEventListener('click', () => {
-    window.location.href = ADMIN_LOGIN_URL; 
+// Menghubungkan listener ke DOM elemen
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.add-to-cart') || e.target.closest('.cart-controls button')) {
+        handleCartAction({ target: e.target.closest('button') });
+    }
 });
