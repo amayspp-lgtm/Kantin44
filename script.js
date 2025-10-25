@@ -11,16 +11,16 @@ const shopsData = [
     {
         id: 'KANTIN1',
         name: 'Toko Bu Siti (Makanan Berat)',
-        tagline: 'Spesialis Nasi Uduk dan Soto Ayam hangat.',
+        tagline: 'Spesialis Nasi Uduk dan Soto Ayam hangat. Kami juga sedia jajanan pasar!',
         shop_icon: 'fa-utensils', 
-        shop_image_url: 'toko-img/bu_siti.jpg', // PATH LOKAL BARU
+        shop_image_url: 'toko-img/bu_siti.jpg', 
         qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+BU+SITI', 
         is_open: true
     },
     {
         id: 'KANTIN2',
         name: 'Toko Pak Budi (Jajanan)',
-        tagline: 'Aneka Gorengan, Roti Bakar, dan snack hits.',
+        tagline: 'Aneka Gorengan, Roti Bakar, dan snack hits yang selalu fresh dan renyah.',
         shop_icon: 'fa-cookie-bite',
         shop_image_url: '', // Kosong, akan fallback ke icon
         qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+PAK+BUDI',
@@ -29,7 +29,7 @@ const shopsData = [
     {
         id: 'KANTIN3',
         name: 'Minuman Segar',
-        tagline: 'Es Teh, Es Jeruk, dan jus buah dingin.',
+        tagline: 'Es Teh, Es Jeruk, dan jus buah dingin. Hilangkan dahaga Anda saat jam istirahat!',
         shop_icon: 'fa-mug-hot',
         shop_image_url: 'toko-img/minuman.jpg',
         qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+MINUMAN',
@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', handleRouting);
  * UI: Render Header (Berubah sesuai Halaman)
  */
 function renderHeader() {
+    // Logo Sederhana
     headerBrand.innerHTML = `
         <img src="logo.png" alt="Logo Kantin Digital" class="logo" onclick="window.location.hash = '';"> 
         <div>
@@ -113,6 +114,7 @@ function renderHeader() {
     document.getElementById('view-cart-button').style.display = isMenuPage ? 'flex' : 'none';
     document.getElementById('floating-cart-btn').style.display = isMenuPage ? 'flex' : 'none';
 
+    // Listener untuk Admin Login (Link terpisah)
     document.getElementById('admin-login-btn').addEventListener('click', () => {
         window.location.href = ADMIN_LOGIN_URL; 
     });
@@ -230,8 +232,11 @@ function renderMenu() {
         const cartItem = cart.find(c => c.id === item.id);
         const quantity = cartItem ? cartItem.quantity : 0;
         const outOfStock = item.stock <= 0;
+        
+        // Logika Fallback Icon Produk
         const hasProductImage = item.image_url && item.image_url.trim() !== '';
-        const iconClass = item.product_icon || (item.category === 'Minuman' ? 'fa-cup-straw' : 'fa-pizza-slice'); // Default icon
+        // Cek product_icon di data, jika tidak ada, gunakan icon default berdasarkan kategori
+        const iconClass = item.product_icon || (item.category.toLowerCase().includes('minuman') ? 'fa-cup-straw' : 'fa-pizza-slice'); 
 
         menuList.innerHTML += `
             <div class="menu-card" data-id="${item.id}">
@@ -374,7 +379,6 @@ checkoutForm.addEventListener('submit', async (event) => {
 
     try {
         // SIMULASI API CALL: POST /api/order
-        // Ganti dengan fetch(`${API_BASE_URL}/order`, {...}) di Back-End sungguhan
         const simulatedResponse = {
             ok: true,
             json: () => Promise.resolve({
