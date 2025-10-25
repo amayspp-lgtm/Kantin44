@@ -59,7 +59,7 @@ header h1 {
     color: #6c757d;
 }
 
-/* Tombol Header Admin (Style ini tidak terpakai, tapi ada) */
+/* Tombol Header Admin (Style ini tidak terpakai di index.html tapi disiapkan) */
 .secondary-btn-header {
     background-color: #6c757d;
     color: white;
@@ -193,7 +193,7 @@ header h1 {
     cursor: not-allowed;
 }
 
-/* List Toko: PERBAIKAN BUG DOUBLE NAME */
+/* List Toko: PERBAIKAN FINAL */
 .list-toko-layout {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -214,7 +214,6 @@ header h1 {
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Header Toko (Hanya untuk Ikon/Nama Utama) */
 .shop-card-header {
     background-color: var(--primary-color);
     color: white;
@@ -222,7 +221,6 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* PENTING: Gunakan Flex-Grow agar Header menempati ruang di atas Body */
     flex-shrink: 0; 
 }
 .shop-card-header h2 {
@@ -233,22 +231,15 @@ header h1 {
 .shop-icon-wrapper {
     font-size: 1.8em;
     color: white;
+    /* Perbaikan: Pastikan ikon Font Awesome terlihat */
+    min-width: 30px; 
+    text-align: right;
 }
-/* Style gambar toko (TIDAK LAGI DIGUNAKAN DI HTML, tapi style tetap ada) */
-.shop-image {
-    display: none; /* Disembunyikan karena kita pakai Icon saja */
-} 
-
 .shop-card-body {
     padding: 15px;
     text-align: left;
     display: flex;
     flex-direction: column;
-}
-.shop-card-body h3 {
-    color: var(--primary-color); 
-    margin-top: 0;
-    font-size: 1.2em;
 }
 .shop-status {
     font-size: 0.9em;

@@ -79,21 +79,18 @@ const checkoutForm = document.getElementById('checkout-form');
 const searchBar = document.getElementById('search-bar');
 const qrisSection = document.querySelector('.qris-section');
 const codSection = document.querySelector('.cod-section');
-// Ambil elemen loading message dari HTML untuk dihapus
-const loadingMessage = document.getElementById('loading-message');
+const adminLoginBtn = document.getElementById('admin-login-btn');
 
 
 /**
  * 0. ROUTER SEDERHANA (Menggunakan Hash)
  */
 function handleRouting() {
-    // Sembunyikan pesan loading jika ada
-    if (loadingMessage) {
-        loadingMessage.style.display = 'none';
-    }
-
     const path = window.location.hash.slice(1);
     
+    // Panggil renderHeader di awal untuk memastikan logo termuat
+    renderHeader();
+
     if (path.startsWith('/menu/')) {
         const shopId = path.split('/')[2];
         loadShopMenu(shopId);
@@ -119,6 +116,14 @@ function renderHeader() {
     const isMenuPage = window.location.hash.startsWith('#/menu/');
     document.getElementById('view-cart-button').style.display = isMenuPage ? 'flex' : 'none';
     document.getElementById('floating-cart-btn').style.display = isMenuPage ? 'flex' : 'none';
+
+    // Aksi admin login dipindah ke URL terpisah
+    const adminBtn = document.getElementById('admin-login-btn');
+    if (adminBtn) {
+        adminBtn.addEventListener('click', () => {
+            window.location.href = ADMIN_LOGIN_URL; 
+        });
+    }
 }
 
 
@@ -258,28 +263,33 @@ function renderMenu() {
         `;
     });
 }
-menuList.addEventListener('click', handleCartAction);
+// Hapus listener menuList.addEventListener('click', handleCartAction);
 
 
 function handleCartAction(event) {
-    const button = event.target.closest('button');
-    if (!button || !button.dataset.action) return;
+    const targetButton = event.target.closest('button');
+    if (!targetButton || !targetButton.dataset.action) return;
 
-    const action = button.dataset.action;
-    const itemId = button.dataset.id;
+    const action = targetButton.dataset.action;
+    const itemId = targetButton.dataset.id;
     const item = menuData.find(i => i.id === itemId);
 
     if (!item) return;
 
     let cartItem = cart.find(c => c.id === itemId);
 
-    if (action === 'add' || action === 'increase') {
+    if (action === 'add') {
+        // PERBAIKAN BUG KELIPATAN: Quantity awal harus 1
         if (!cartItem) {
             cart.push({ id: item.id, name: item.name, price: item.price, quantity: 1, stock: item.stock });
-        } else if (cartItem.quantity < item.stock) {
+        }
+    } else if (action === 'increase') {
+        // PERBAIKAN: Menambah kuantitas 1
+        if (cartItem && cartItem.quantity < item.stock) {
             cartItem.quantity++;
         }
     } else if (action === 'decrease') {
+        // PERBAIKAN: Mengurangi kuantitas 1
         if (cartItem && cartItem.quantity > 1) {
             cartItem.quantity--;
         } else if (cartItem && cartItem.quantity === 1) {
@@ -345,7 +355,7 @@ checkoutForm.addEventListener('submit', async (event) => {
     if (cart.length === 0 || !currentShopId) return alert("Keranjang kosong atau toko belum dipilih!");
 
     const name = document.getElementById('customer-name').value;
-    const customerClass = document.getElementById('customer-class').value;
+    const customerClass = document.getElementById('customer-class').value; 
     const notes = document.getElementById('order-notes').value;
     
     const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
@@ -512,9 +522,10 @@ checkStatusBtn.addEventListener('click', async () => {
 });
 
 
-// Menghubungkan listener ke DOM elemen
+// Menghubungkan listener ke DOM elemen (Event Delegation Final)
 document.addEventListener('click', (e) => {
-    if (e.target.closest('.add-to-cart') || e.target.closest('.cart-controls button')) {
-        handleCartAction({ target: e.target.closest('button') });
+    const button = e.target.closest('button');
+    if (button && (button.classList.contains('add-to-cart') || button.closest('.cart-controls'))) {
+        handleCartAction({ target: button });
     }
 });
