@@ -3,7 +3,7 @@
 // --- KONFIGURASI FRONT-END ---
 const API_BASE_URL = '/api'; 
 const CURRENCY_FORMAT = new Intl.NumberFormat('id-ID');
-const ADMIN_LOGIN_URL = 'admin-login.html'; // Link terpisah untuk Admin
+const ADMIN_LOGIN_URL = 'admin-login.html'; 
 // --- END KONFIGURASI ---
 
 // --- DUMMY DATA TOKO (HARDCODED) ---
@@ -22,7 +22,7 @@ const shopsData = [
         name: 'Toko Pak Budi (Jajanan)',
         tagline: 'Aneka Gorengan, Roti Bakar, dan snack hits yang selalu fresh dan renyah.',
         shop_icon: 'fa-cookie-bite',
-        shop_image_url: '', // Kosong, akan fallback ke icon
+        shop_image_url: '', 
         qris_url: 'https://via.placeholder.com/250x250.png?text=QRIS+PAK+BUDI',
         is_open: true
     },
@@ -102,7 +102,6 @@ document.addEventListener('DOMContentLoaded', handleRouting);
  * UI: Render Header (Berubah sesuai Halaman)
  */
 function renderHeader() {
-    // Logo Sederhana
     headerBrand.innerHTML = `
         <img src="logo.png" alt="Logo Kantin Digital" class="logo" onclick="window.location.hash = '';"> 
         <div>
@@ -114,7 +113,7 @@ function renderHeader() {
     document.getElementById('view-cart-button').style.display = isMenuPage ? 'flex' : 'none';
     document.getElementById('floating-cart-btn').style.display = isMenuPage ? 'flex' : 'none';
 
-    // Listener untuk Admin Login (Link terpisah)
+    // Aksi admin login dipindah ke URL terpisah
     document.getElementById('admin-login-btn').addEventListener('click', () => {
         window.location.href = ADMIN_LOGIN_URL; 
     });
@@ -122,7 +121,7 @@ function renderHeader() {
 
 
 // --- FUNGSI HALAMAN UTAMA: LIST TOKO ---
-async function loadShopList() {
+function loadShopList() {
     // Reset state saat pindah ke List Toko
     cart = [];
     updateCartDisplay();
@@ -207,7 +206,7 @@ async function loadShopMenu(shopId) {
 }
 
 
-// --- FUNGSI MANAJEMEN MENU/KERANJANG ---
+// --- FUNGSI MANAJEMEN MENU/KERANJANGAN ---
 
 function handleFilterAndSearch() {
     const searchTerm = searchBar.value.toLowerCase();
@@ -235,7 +234,6 @@ function renderMenu() {
         
         // Logika Fallback Icon Produk
         const hasProductImage = item.image_url && item.image_url.trim() !== '';
-        // Cek product_icon di data, jika tidak ada, gunakan icon default berdasarkan kategori
         const iconClass = item.product_icon || (item.category.toLowerCase().includes('minuman') ? 'fa-cup-straw' : 'fa-pizza-slice'); 
 
         menuList.innerHTML += `
@@ -243,7 +241,8 @@ function renderMenu() {
                 
                 <div class="product-visual">
                     ${hasProductImage 
-                        ? `<img src="${item.image_url}" alt="${item.name}" class="product-image">`
+                        // Tambahkan onerror untuk fallback ke icon jika gambar tidak ditemukan di path
+                        ? `<img src="${item.image_url}" alt="${item.name}" class="product-image" onerror="this.outerHTML='<div class=\\'image-placeholder\\'><i class=\\'fas ${iconClass}\\'></i></div>';">`
                         : `<div class="image-placeholder"><i class="fas ${iconClass}"></i></div>`
                     }
                 </div>
