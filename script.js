@@ -88,7 +88,6 @@ const adminLoginBtn = document.getElementById('admin-login-btn');
 function handleRouting() {
     const path = window.location.hash.slice(1);
     
-    // Panggil renderHeader di awal untuk memastikan logo termuat
     renderHeader();
 
     if (path.startsWith('/menu/')) {
@@ -114,10 +113,12 @@ function renderHeader() {
         </div>
     `;
     const isMenuPage = window.location.hash.startsWith('#/menu/');
-    document.getElementById('view-cart-button').style.display = isMenuPage ? 'flex' : 'none';
-    document.getElementById('floating-cart-btn').style.display = isMenuPage ? 'flex' : 'none';
+    const viewCartBtn = document.getElementById('view-cart-button');
+    const floatingCartBtn = document.getElementById('floating-cart-btn');
+    
+    if (viewCartBtn) viewCartBtn.style.display = isMenuPage ? 'flex' : 'none';
+    if (floatingCartBtn) floatingCartBtn.style.display = isMenuPage ? 'flex' : 'none';
 
-    // Aksi admin login dipindah ke URL terpisah
     const adminBtn = document.getElementById('admin-login-btn');
     if (adminBtn) {
         adminBtn.addEventListener('click', () => {
@@ -136,6 +137,7 @@ function loadShopList() {
     
     renderHeader(); 
     filtersSection.style.display = 'none';
+    
     mainContent.innerHTML = '<h2><i class="fas fa-store-alt"></i> Pilih Toko Kantin</h2>';
     menuList.className = 'list-toko-layout';
     
@@ -150,6 +152,7 @@ function loadShopList() {
     shops.forEach(shop => {
         const iconClass = shop.shop_icon || 'fa-store';
         
+        // IKON TOKO: Rendering kartu toko dijamin hanya menggunakan header icon
         menuList.innerHTML += `
             <div class="shop-card" data-id="${shop.id}" onclick="window.location.hash = '/menu/${shop.id}'">
                 
@@ -191,7 +194,7 @@ async function loadShopMenu(shopId) {
                 <i class="fas fa-arrow-left"></i> Kembali ke Daftar Toko
             </button>
         </div>
-        <h2>Menu ${currentShopName}</h2>
+        <h2><i class="fas fa-list-alt"></i> Menu ${currentShopName}</h2>
     `;
     filtersSection.style.display = 'block';
     menuList.className = 'grid-layout';
@@ -221,7 +224,7 @@ searchBar.addEventListener('input', handleFilterAndSearch);
 function renderMenu() {
     menuList.innerHTML = '';
     if (filteredMenu.length === 0) {
-        menuList.innerHTML = '<p class="text-center" style="grid-column: 1 / -1;">Menu tidak ditemukan.</p>';
+        menuList.innerHTML = '<p class="text-center" style="grid-column: 1 / -1;"><i class="fas fa-exclamation-circle"></i> Menu tidak ditemukan.</p>';
         return;
     }
     
@@ -233,16 +236,27 @@ function renderMenu() {
         // Logika Fallback Icon Produk
         const hasProductImage = item.image_url && item.image_url.trim() !== '';
         const iconClass = item.product_icon || (item.category.toLowerCase().includes('minuman') ? 'fa-cup-straw' : 'fa-pizza-slice'); 
+        
+        // LOGIKA IKON PRODUK: Paling andal, menggunakan onerror di HTML
+        const productVisualHtml = hasProductImage 
+            ? `
+                <div class="product-visual">
+                    <img src="${item.image_url}" alt="${item.name}" class="product-image" 
+                        onerror="this.outerHTML='<div class=\\'image-placeholder\\'><i class=\\'fas ${iconClass}\\'></i></div>';"
+                    >
+                </div>
+            `
+            : `
+                <div class="product-visual">
+                    <div class="image-placeholder"><i class="fas ${iconClass}"></i></div>
+                </div>
+            `;
+
 
         menuList.innerHTML += `
             <div class="menu-card" data-id="${item.id}">
                 
-                <div class="product-visual">
-                    ${hasProductImage 
-                        ? `<img src="${item.image_url}" alt="${item.name}" class="product-image" onerror="this.outerHTML='<div class=\\'image-placeholder\\'><i class=\\'fas ${iconClass}\\'></i></div>';">`
-                        : `<div class="image-placeholder"><i class="fas ${iconClass}"></i></div>`
-                    }
-                </div>
+                ${productVisualHtml}
 
                 <div class="card-content">
                     <h3>${item.name}</h3>
@@ -263,7 +277,6 @@ function renderMenu() {
         `;
     });
 }
-// Hapus listener menuList.addEventListener('click', handleCartAction);
 
 
 function handleCartAction(event) {
@@ -279,17 +292,17 @@ function handleCartAction(event) {
     let cartItem = cart.find(c => c.id === itemId);
 
     if (action === 'add') {
-        // PERBAIKAN BUG KELIPATAN: Quantity awal harus 1
+        // Bug Kelipatan FIX: Quantity awal harus 1
         if (!cartItem) {
             cart.push({ id: item.id, name: item.name, price: item.price, quantity: 1, stock: item.stock });
         }
     } else if (action === 'increase') {
-        // PERBAIKAN: Menambah kuantitas 1
+        // Menambah kuantitas 1
         if (cartItem && cartItem.quantity < item.stock) {
             cartItem.quantity++;
         }
     } else if (action === 'decrease') {
-        // PERBAIKAN: Mengurangi kuantitas 1
+        // Mengurangi kuantitas 1
         if (cartItem && cartItem.quantity > 1) {
             cartItem.quantity--;
         } else if (cartItem && cartItem.quantity === 1) {
@@ -306,8 +319,14 @@ function updateCartDisplay() {
     currentTotalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
     cartCountElements.forEach(el => el.textContent = totalItems);
-    document.getElementById('floating-cart-btn').style.display = totalItems > 0 && window.location.hash.startsWith('#/menu/') ? 'flex' : 'none';
-    document.getElementById('floating-cart-count').textContent = totalItems;
+    
+    const floatingCartBtn = document.getElementById('floating-cart-btn');
+
+    if (floatingCartBtn) {
+        floatingCartBtn.style.display = totalItems > 0 && window.location.hash.startsWith('#/menu/') ? 'flex' : 'none';
+        document.getElementById('floating-cart-count').textContent = totalItems;
+    }
+    
     document.getElementById('modal-total-amount').textContent = `Rp ${CURRENCY_FORMAT.format(currentTotalAmount)}`;
     document.getElementById('shop-name-cart').textContent = currentShopName || 'Toko';
 
@@ -315,7 +334,7 @@ function updateCartDisplay() {
     modalList.innerHTML = '';
     
     if (cart.length === 0) {
-        modalList.innerHTML = '<li>Keranjang Anda kosong.</li>';
+        modalList.innerHTML = '<li><i class="fas fa-shopping-basket"></i> Keranjang Anda kosong.</li>';
     } else {
         cart.forEach(item => {
             modalList.innerHTML += `
@@ -522,7 +541,7 @@ checkStatusBtn.addEventListener('click', async () => {
 });
 
 
-// Menghubungkan listener ke DOM elemen (Event Delegation Final)
+// Menghubungkan listener ke DOM elemen
 document.addEventListener('click', (e) => {
     const button = e.target.closest('button');
     if (button && (button.classList.contains('add-to-cart') || button.closest('.cart-controls'))) {

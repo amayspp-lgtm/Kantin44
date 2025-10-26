@@ -1,13 +1,16 @@
 /* Definisi Warna dan Reset */
 :root {
-    --primary-color: #007bff; /* Biru Primer */
-    --secondary-color: #ff8c00; /* Oranye */
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --text-color: #333;
+    /* Skema Warna Baru */
+    --primary-color: #1a73e8; /* Biru Google yang Lebih Hidup */
+    --secondary-color: #fbbc04; /* Kuning/Emas yang Cerah */
+    --accent-color: #ea4335; /* Merah untuk Aksi/Alert */
+    --success-color: #34a853; /* Hijau yang lebih cerah */
+    
+    --text-color: #202124;
     --light-bg: #f8f9fa;
-    --border-color: #ddd;
-    --skeleton-color: #e9ecef;
+    --border-color: #e0e0e0; 
+    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 body {
@@ -16,6 +19,7 @@ body {
     padding: 0;
     background-color: var(--light-bg);
     color: var(--text-color);
+    scroll-behavior: smooth;
 }
 .container {
     max-width: 1200px;
@@ -23,10 +27,25 @@ body {
     padding: 0 20px;
 }
 
+/* GLOBAL ICON STYLING FIX */
+.fas, .far, .fab {
+    font-size: 1.1em; /* Memastikan ukuran ikon dasar terlihat */
+}
+.cart-icon-btn i, .secondary-btn i, .primary-btn i {
+    margin-right: 5px; 
+}
+.modal-content h2 i, .modal-content h3 i {
+    color: var(--secondary-color);
+}
+h2 {
+    font-weight: 700;
+}
+
+
 /* Header dan Branding */
 header {
     background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     padding: 10px 0;
     position: sticky;
     top: 0;
@@ -50,8 +69,9 @@ header .container {
 }
 header h1 {
     margin: 0;
-    font-size: 1.5em;
-    color: var(--primary-color);
+    font-size: 1.6em;
+    font-weight: 700;
+    color: var(--text-color);
 }
 .school-name {
     margin: 0;
@@ -59,41 +79,23 @@ header h1 {
     color: #6c757d;
 }
 
-/* Tombol Header Admin (Style ini tidak terpakai di index.html tapi disiapkan) */
-.secondary-btn-header {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s;
-    margin-right: 10px;
-}
-.secondary-btn-header:hover {
-    background-color: #5a6268;
-}
-
 /* Ikon Keranjang */
 .cart-icon-btn {
-    background: var(--primary-color);
+    background: var(--accent-color);
     color: white;
     border: none;
     padding: 8px 15px;
-    border-radius: 5px;
+    border-radius: 20px;
     cursor: pointer;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 5px;
-    transition: background-color 0.3s;
-}
-.cart-icon-btn:hover {
-    background-color: #0056b3;
+    transition: all 0.3s;
 }
 .badge {
     background-color: var(--secondary-color);
+    color: var(--text-color);
     border-radius: 50%;
     padding: 2px 7px;
     font-size: 0.8em;
@@ -106,14 +108,27 @@ header h1 {
     border-bottom: 1px solid var(--border-color);
 }
 #search-bar {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
+    padding: 12px;
     border: 1px solid var(--border-color);
-    border-radius: 5px;
-    box-sizing: border-box;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     font-size: 1em;
     font-family: 'Poppins', Arial, sans-serif; 
+}
+.filter-chip {
+    background-color: #e9ecef;
+    color: var(--text-color);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+.filter-chip.active, .filter-chip:hover {
+    background-color: var(--primary-color);
+    color: white;
 }
 
 /* Tampilan Menu (Grid Layout) */
@@ -125,8 +140,8 @@ header h1 {
 }
 .menu-card {
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); 
+    border-radius: 12px; 
+    box-shadow: var(--shadow-light); 
     overflow: hidden;
     transition: transform 0.3s, box-shadow 0.3s;
     display: flex;
@@ -135,7 +150,7 @@ header h1 {
 }
 .menu-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-medium);
 }
 
 /* Visual Produk & Fallback Icon */
@@ -143,6 +158,7 @@ header h1 {
     position: relative;
     width: 100%;
     height: 180px;
+    overflow: hidden;
 }
 .product-image {
     width: 100%;
@@ -168,9 +184,14 @@ header h1 {
     display: flex;
     flex-direction: column;
 }
+.card-content h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-weight: 600;
+}
 .price {
-    color: var(--secondary-color);
-    font-size: 1.2em;
+    color: var(--accent-color);
+    font-size: 1.3em;
     font-weight: 700;
     margin-bottom: 10px;
 }
@@ -179,21 +200,61 @@ header h1 {
     color: white;
     border: none;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
     margin-top: auto; 
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
 }
 .add-to-cart:hover:not(:disabled) {
-    background-color: #0056b3;
+    background-color: #1256b9;
 }
 .add-to-cart:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }
 
-/* List Toko: PERBAIKAN FINAL */
+/* Kontrol Kuantitas di Produk */
+.cart-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--primary-color);
+}
+.cart-controls button {
+    flex-basis: 30%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 0;
+    transition: background-color 0.2s;
+    font-size: 1.1em;
+}
+.cart-controls button:hover:not(:disabled) {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+}
+.cart-quantity {
+    flex-basis: 40%;
+    text-align: center;
+    font-weight: 700;
+    color: var(--text-color);
+}
+.cart-controls button[data-action="decrease"] {
+    background-color: var(--accent-color);
+}
+.cart-controls button[data-action="decrease"]:hover:not(:disabled) {
+    background-color: #d35400; 
+}
+
+
+/* --- LIST TOKO: Tampilan Kartu Baru --- */
 .list-toko-layout {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -203,21 +264,24 @@ header h1 {
 .shop-card {
     background: white;
     border-radius: 12px; 
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
     padding: 0; 
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s;
+    min-height: 220px; 
+    display: flex;
+    flex-direction: column;
 }
 .shop-card:hover {
-    transform: scale(1.02); 
+    transform: translateY(-5px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 .shop-card-header {
     background-color: var(--primary-color);
     color: white;
-    padding: 15px;
+    padding: 20px 15px; 
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -225,21 +289,26 @@ header h1 {
 }
 .shop-card-header h2 {
     margin: 0;
-    font-size: 1.4em;
+    font-size: 1.6em; /* Nama toko lebih besar */
     font-weight: 700;
 }
 .shop-icon-wrapper {
-    font-size: 1.8em;
-    color: white;
-    /* Perbaikan: Pastikan ikon Font Awesome terlihat */
-    min-width: 30px; 
+    font-size: 2.6em; /* Ikon lebih besar dan menonjol */
+    color: var(--secondary-color); 
+    min-width: 40px; 
     text-align: right;
+    padding-left: 10px;
+    transition: transform 0.3s;
+}
+.shop-card:hover .shop-icon-wrapper {
+    transform: rotate(15deg); 
 }
 .shop-card-body {
     padding: 15px;
     text-align: left;
     display: flex;
     flex-direction: column;
+    flex-grow: 1; 
 }
 .shop-status {
     font-size: 0.9em;
@@ -259,7 +328,28 @@ header h1 {
     -webkit-box-orient: vertical;
 }
 
-/* Modal Umum */
+/* Tombol Kembali */
+.back-btn-container {
+    margin-bottom: 20px;
+}
+.secondary-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 400;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px; 
+}
+.secondary-btn:hover {
+    background-color: #5a6268;
+}
+
+/* --- MODAL CHECKOUT & FORM PERBAIKAN --- */
 .modal {
     display: none; 
     position: fixed; 
@@ -269,18 +359,31 @@ header h1 {
     width: 100%; 
     height: 100%; 
     overflow: auto; 
-    background-color: rgba(0,0,0,0.6); 
+    background-color: rgba(0,0,0,0.7); 
 }
 .modal-content {
-    background-color: #fefefe;
-    margin: 5% auto; 
+    margin: 5% auto;
     padding: 30px;
     border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    background-color: #fefefe;
     width: 90%; 
     max-width: 600px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     position: relative;
     animation: fadeIn 0.3s;
+}
+.modal-content h2, .modal-content h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+.modal-content h2 i, .modal-content h3 i {
+    color: var(--secondary-color);
 }
 .close-btn, .close-btn-conf, .close-btn-login {
     color: #aaa;
@@ -308,34 +411,37 @@ header h1 {
 /* Checkout Form */
 #checkout-form input, #checkout-form textarea {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin: 8px 0;
     box-sizing: border-box;
     border: 1px solid var(--border-color);
-    border-radius: 5px;
+    border-radius: 8px;
     font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+#checkout-form input:focus, #checkout-form textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2); 
+    outline: none;
 }
 .primary-btn {
     background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 12px 20px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
     transition: background-color 0.3s;
     width: 100%;
     margin-top: 15px;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
-.secondary-btn {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 400;
-    transition: background-color 0.3s;
+.primary-btn:hover:not(:disabled) {
+    background-color: #0056b3;
 }
 .small-btn {
     width: auto !important;
@@ -346,14 +452,16 @@ header h1 {
 
 /* Status Konfirmasi */
 .order-code-box {
-    background-color: var(--light-bg);
-    border: 2px dashed var(--primary-color);
-    padding: 15px;
-    margin: 15px auto;
+    background-color: var(--primary-color); 
+    color: white;
+    padding: 20px;
+    margin: 20px auto;
     max-width: 300px;
-    font-size: 1.5em;
-    color: var(--primary-color);
-    border-radius: 5px;
+    font-size: 1.8em;
+    letter-spacing: 1px;
+    font-weight: 700;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 .qris-img {
     width: 100%;
@@ -373,67 +481,15 @@ header h1 {
     margin-top: 20px;
     text-align: left;
 }
-#timeline-steps {
-    display: flex;
-    justify-content: space-between;
-    position: relative;
-    padding: 20px 0;
-    margin-bottom: 20px;
-}
-#timeline-steps::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 3px;
-    background-color: var(--border-color);
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1;
-}
-.step {
-    text-align: center;
-    position: relative;
-    width: 20%;
-    z-index: 2;
+.status-timeline h3 {
+    border-bottom: none;
+    color: var(--text-color);
 }
 .step-dot {
-    width: 15px;
-    height: 15px;
     background-color: var(--border-color);
-    border-radius: 50%;
-    margin: 0 auto 5px;
-    transition: background-color 0.4s;
 }
 .step.active .step-dot {
-    background-color: var(--secondary-color);
-}
-.step-title {
-    font-size: 0.8em;
-    font-weight: 600;
-    margin-top: 5px;
-}
-
-/* PAYMENT SELECTOR */
-.payment-method-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-.payment-method-selector label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    font-weight: 500;
-}
-.payment-method-selector input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--primary-color);
+    background-color: var(--success-color); 
 }
 
 /* Floating Cart Button */
@@ -442,19 +498,22 @@ header h1 {
     bottom: 20px;
     right: 20px;
     background-color: var(--secondary-color);
-    color: white;
+    color: var(--text-color);
     border: none;
     padding: 15px 20px;
     border-radius: 30px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     font-size: 1em;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     z-index: 40;
     display: flex;
     align-items: center;
     gap: 5px;
     transition: background-color 0.3s;
+}
+#floating-cart-btn i {
+    color: var(--text-color);
 }
 
 /* Utility */
